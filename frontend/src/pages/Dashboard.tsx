@@ -42,107 +42,90 @@ const Dashboard: React.FC = () => {
   const totalNodes = clusters?.reduce((sum, cluster) => sum + (cluster.status?.availableNodes || 0), 0) || 0;
 
   return (
-    <div style={{ background: '#F5F7FA', minHeight: '100vh', paddingBottom: '40px' }}>
-      <EuiPageHeader
-        pageTitle="Dashboard"
-        description="Overview of your Elastic Cloud on Kubernetes deployments"
-        rightSideItems={[
-          <EuiButton fill color="primary" size="m" onClick={() => navigate('/clusters/create')}>
-            Create Cluster
-          </EuiButton>,
-        ]}
-        paddingSize="l"
-      />
+    <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
+      <div style={{ padding: '24px 48px' }}>
+        <EuiTitle size="l">
+          <h1>Welcome to Elastic Cloud on Kubernetes</h1>
+        </EuiTitle>
+        <EuiSpacer size="l" />
 
-      <EuiSpacer size="l" />
-
-      {isLoading ? (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <EuiLoadingSpinner size="xl" />
-        </div>
-      ) : totalClusters === 0 ? (
-        <EuiEmptyPrompt
-          title={<h2>No Elasticsearch clusters found</h2>}
-          body={<p>Get started by creating your first Elasticsearch cluster.</p>}
-          actions={
-            <EuiButton fill onClick={() => navigate('/clusters/create')}>
-              Create Cluster
-            </EuiButton>
-          }
-        />
-      ) : (
-        <>
-          <EuiFlexGroup>
-            <EuiFlexItem>
-              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <EuiStat
-                  title={totalClusters.toString()}
-                  description="Total Clusters"
-                  titleColor="ghost"
-                  titleSize="l"
-                  descriptionElement="div"
-                  isLoading={isLoading}
-                  textAlign="center"
-                  style={{ color: 'white' }}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
-
-            <EuiFlexItem>
-              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                <EuiStat
-                  title={totalNodes.toString()}
-                  description="Total Nodes"
-                  titleColor="ghost"
-                  titleSize="l"
-                  descriptionElement="div"
-                  isLoading={isLoading}
-                  textAlign="center"
-                  style={{ color: 'white' }}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
-
-            <EuiFlexItem>
-              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-                <EuiStat
-                  title={(healthCounts.green || 0).toString()}
-                  description="Healthy Clusters"
-                  titleColor="ghost"
-                  titleSize="l"
-                  descriptionElement="div"
-                  isLoading={isLoading}
-                  textAlign="center"
-                  style={{ color: 'white' }}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
-
-            <EuiFlexItem>
-              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
-                <EuiStat
-                  title={((healthCounts.yellow || 0) + (healthCounts.red || 0)).toString()}
-                  description="Unhealthy Clusters"
-                  titleColor="ghost"
-                  titleSize="l"
-                  descriptionElement="div"
-                  isLoading={isLoading}
-                  textAlign="center"
-                  style={{ color: 'white' }}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-
-          <EuiSpacer size="l" />
-
-          <EuiPanel hasBorder paddingSize="l">
-            <h3>Recent Clusters</h3>
-            <EuiSpacer size="m" />
-            <p>View all clusters in the <EuiButton onClick={() => navigate('/clusters')}>Clusters</EuiButton> page.</p>
-          </EuiPanel>
-        </>
-      )}
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <EuiLoadingSpinner size="xl" />
+          </div>
+        ) : totalClusters === 0 ? (
+          <EuiEmptyPrompt
+            title={<h2>No Elasticsearch clusters found</h2>}
+            body={<p>Get started by creating your first Elasticsearch cluster.</p>}
+            actions={
+              <EuiButton fill onClick={() => navigate('/clusters/create')}>
+                Create Cluster
+              </EuiButton>
+            }
+          />
+        ) : (
+          <>
+            <EuiPanel paddingSize="none" hasBorder style={{ background: 'transparent' }}>
+              <div style={{ padding: '16px 24px', borderBottom: '1px solid #343741', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <EuiTitle size="s">
+                  <h2>Elasticsearch Deployments</h2>
+                </EuiTitle>
+                <EuiButton fill size="s" onClick={() => navigate('/clusters/create')}>
+                  Create deployment
+                </EuiButton>
+              </div>
+              <div style={{ padding: '0' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #343741' }}>
+                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Deployment</th>
+                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Status</th>
+                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Version</th>
+                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Namespace</th>
+                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Nodes</th>
+                      <th style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 500, fontSize: '14px' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clusters?.map((cluster) => (
+                      <tr key={`${cluster.metadata?.namespace}/${cluster.metadata?.name}`} style={{ borderBottom: '1px solid #343741' }}>
+                        <td style={{ padding: '16px 24px' }}>
+                          <span style={{ color: '#1BA9F5', fontWeight: 500 }}>{cluster.metadata?.name}</span>
+                        </td>
+                        <td style={{ padding: '16px 24px' }}>
+                          <span
+                            style={{
+                              padding: '4px 12px',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              background: cluster.status?.health === 'green' ? '#00BFB3' : cluster.status?.health === 'yellow' ? '#FEC514' : '#F04E98',
+                              color: '#000'
+                            }}
+                          >
+                            {cluster.status?.health === 'green' ? 'Healthy' : cluster.status?.health === 'yellow' ? 'Warning' : 'Unhealthy'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 24px' }}>{cluster.spec?.version || 'N/A'}</td>
+                        <td style={{ padding: '16px 24px' }}>{cluster.metadata?.namespace}</td>
+                        <td style={{ padding: '16px 24px' }}>{cluster.status?.availableNodes || 0}</td>
+                        <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                          <EuiButton
+                            size="s"
+                            onClick={() => navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`)}
+                          >
+                            Open
+                          </EuiButton>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </EuiPanel>
+          </>
+        )}
+      </div>
     </div>
   );
 };
