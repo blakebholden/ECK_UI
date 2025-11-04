@@ -14,12 +14,20 @@ const Header: React.FC = () => {
   const location = useLocation();
 
   return (
-    <EuiHeader position="fixed">
+    <EuiHeader position="fixed" theme="dark">
       <EuiHeaderSection>
         <EuiHeaderSectionItem>
           <EuiTitle size="xs">
-            <h1 style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-              ECK UI
+            <h1
+              style={{
+                cursor: 'pointer',
+                color: '#00BFB3',
+                fontWeight: 600,
+                letterSpacing: '0.5px'
+              }}
+              onClick={() => navigate('/')}
+            >
+              Elastic Cloud on Kubernetes
             </h1>
           </EuiTitle>
         </EuiHeaderSectionItem>

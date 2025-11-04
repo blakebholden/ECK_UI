@@ -42,15 +42,16 @@ const Dashboard: React.FC = () => {
   const totalNodes = clusters?.reduce((sum, cluster) => sum + (cluster.status?.availableNodes || 0), 0) || 0;
 
   return (
-    <>
+    <div style={{ background: '#F5F7FA', minHeight: '100vh', paddingBottom: '40px' }}>
       <EuiPageHeader
         pageTitle="Dashboard"
         description="Overview of your Elastic Cloud on Kubernetes deployments"
         rightSideItems={[
-          <EuiButton fill onClick={() => navigate('/clusters/create')}>
+          <EuiButton fill color="primary" size="m" onClick={() => navigate('/clusters/create')}>
             Create Cluster
           </EuiButton>,
         ]}
+        paddingSize="l"
       />
 
       <EuiSpacer size="l" />
@@ -73,45 +74,61 @@ const Dashboard: React.FC = () => {
         <>
           <EuiFlexGroup>
             <EuiFlexItem>
-              <EuiPanel>
+              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                 <EuiStat
                   title={totalClusters.toString()}
                   description="Total Clusters"
-                  titleColor="primary"
+                  titleColor="ghost"
+                  titleSize="l"
+                  descriptionElement="div"
                   isLoading={isLoading}
+                  textAlign="center"
+                  style={{ color: 'white' }}
                 />
               </EuiPanel>
             </EuiFlexItem>
 
             <EuiFlexItem>
-              <EuiPanel>
+              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
                 <EuiStat
                   title={totalNodes.toString()}
                   description="Total Nodes"
-                  titleColor="success"
+                  titleColor="ghost"
+                  titleSize="l"
+                  descriptionElement="div"
                   isLoading={isLoading}
+                  textAlign="center"
+                  style={{ color: 'white' }}
                 />
               </EuiPanel>
             </EuiFlexItem>
 
             <EuiFlexItem>
-              <EuiPanel>
+              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
                 <EuiStat
                   title={(healthCounts.green || 0).toString()}
                   description="Healthy Clusters"
-                  titleColor="success"
+                  titleColor="ghost"
+                  titleSize="l"
+                  descriptionElement="div"
                   isLoading={isLoading}
+                  textAlign="center"
+                  style={{ color: 'white' }}
                 />
               </EuiPanel>
             </EuiFlexItem>
 
             <EuiFlexItem>
-              <EuiPanel>
+              <EuiPanel hasBorder paddingSize="l" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
                 <EuiStat
                   title={((healthCounts.yellow || 0) + (healthCounts.red || 0)).toString()}
                   description="Unhealthy Clusters"
-                  titleColor="danger"
+                  titleColor="ghost"
+                  titleSize="l"
+                  descriptionElement="div"
                   isLoading={isLoading}
+                  textAlign="center"
+                  style={{ color: 'white' }}
                 />
               </EuiPanel>
             </EuiFlexItem>
@@ -119,14 +136,14 @@ const Dashboard: React.FC = () => {
 
           <EuiSpacer size="l" />
 
-          <EuiPanel>
+          <EuiPanel hasBorder paddingSize="l">
             <h3>Recent Clusters</h3>
             <EuiSpacer size="m" />
             <p>View all clusters in the <EuiButton onClick={() => navigate('/clusters')}>Clusters</EuiButton> page.</p>
           </EuiPanel>
         </>
       )}
-    </>
+    </div>
   );
 };
 
