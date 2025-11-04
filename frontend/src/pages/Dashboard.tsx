@@ -11,6 +11,7 @@ import {
   EuiLoadingSpinner,
   EuiEmptyPrompt,
   EuiButton,
+  EuiTitle,
 } from '@elastic/eui';
 import { clustersApi } from '@services/api';
 
