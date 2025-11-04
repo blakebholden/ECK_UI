@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eck-ui
+  namespace: eck-ui
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eck-ui
+rules:
+# Elasticsearch clusters
+- apiGroups: ["elasticsearch.k8s.elastic.co"]
+  resources: ["elasticsearches"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Kibana instances
+- apiGroups: ["kibana.k8s.elastic.co"]
+  resources: ["kibanas"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# APM servers
+- apiGroups: ["apm.k8s.elastic.co"]
+  resources: ["apmservers"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Beats
+- apiGroups: ["beat.k8s.elastic.co"]
+  resources: ["beats"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Elastic Agents
+- apiGroups: ["agent.k8s.elastic.co"]
+  resources: ["agents"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Namespaces (read-only)
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch"]
+# Secrets (for Elasticsearch credentials)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+# Pods (for monitoring)
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+# Events
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eck-ui
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eck-ui
+subjects:
+- kind: ServiceAccount
+  name: eck-ui
+  namespace: eck-ui

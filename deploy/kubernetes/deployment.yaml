@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eck-ui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eck-ui-backend
+  namespace: eck-ui
+  labels:
+    app: eck-ui
+    component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eck-ui
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: eck-ui
+        component: backend
+    spec:
+      serviceAccountName: eck-ui
+      containers:
+      - name: backend
+        image: eck-ui-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "4000"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: CORS_ORIGIN
+          value: "http://localhost"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eck-ui-frontend
+  namespace: eck-ui
+  labels:
+    app: eck-ui
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eck-ui
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: eck-ui
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: eck-ui-frontend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
