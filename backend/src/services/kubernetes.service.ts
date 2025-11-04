@@ -9,13 +9,25 @@ class KubernetesService {
   constructor() {
     this.kc = new k8s.KubeConfig();
 
-    // Try to load config (in-cluster or from kubeconfig file)
-    try {
-      this.kc.loadFromCluster();
-      logger.info('Loaded in-cluster Kubernetes configuration');
-    } catch (error) {
-      this.kc.loadFromDefault();
-      logger.info('Loaded Kubernetes configuration from kubeconfig file');
+    // In development, prefer kubeconfig file; in production (K8s pod), use in-cluster config
+    if (process.env.NODE_ENV === 'production' && process.env.KUBERNETES_SERVICE_HOST) {
+      try {
+        this.kc.loadFromCluster();
+        logger.info('Loaded in-cluster Kubernetes configuration');
+      } catch (error) {
+        logger.warn('Failed to load in-cluster config, falling back to kubeconfig');
+        this.kc.loadFromDefault();
+        logger.info('Loaded Kubernetes configuration from kubeconfig file');
+      }
+    } else {
+      // Development mode - use local kubeconfig
+      try {
+        this.kc.loadFromDefault();
+        logger.info('Loaded Kubernetes configuration from kubeconfig file');
+      } catch (error) {
+        logger.error('Failed to load kubeconfig', { error });
+        throw new Error('Could not load Kubernetes configuration');
+      }
     }
 
     this.customApi = this.kc.makeApiClient(k8s.CustomObjectsApi);
