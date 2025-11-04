@@ -6,7 +6,6 @@ import {
   EuiHeaderSectionItem,
   EuiHeaderLinks,
   EuiHeaderLink,
-  EuiIcon,
   EuiTitle,
 } from '@elastic/eui';
 
@@ -19,8 +18,7 @@ const Header: React.FC = () => {
       <EuiHeaderSection>
         <EuiHeaderSectionItem>
           <EuiTitle size="xs">
-            <h1 style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/')}>
-              <EuiIcon type="logoKibana" size="l" />
+            <h1 style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
               ECK UI
             </h1>
           </EuiTitle>
