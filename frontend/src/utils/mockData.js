@@ -1,6 +1,4 @@
-import type { ElasticsearchCluster, KibanaInstance } from '@types/index';
-
-export const mockClusters: ElasticsearchCluster[] = [
+export const mockClusters = [
   {
     metadata: {
       name: 'production-cluster',
@@ -287,7 +285,7 @@ export const mockClusters: ElasticsearchCluster[] = [
   },
 ];
 
-export const mockKibana: KibanaInstance[] = [
+export const mockKibana = [
   {
     metadata: {
       name: 'production-kibana',

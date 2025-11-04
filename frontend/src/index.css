@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-elastic-dark-800 text-elastic-text-primary;
+  }
+
+  /* Pulse animation for status indicators */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+@layer components {
+  /* Table styles matching Elastic Cloud UI */
+  .table-elastic {
+    @apply w-full border-collapse;
+  }
+
+  .table-elastic thead {
+    @apply border-b border-elastic-dark-600;
+  }
+
+  .table-elastic th {
+    @apply text-left text-xs font-medium text-elastic-text-secondary uppercase tracking-wider py-3 px-4;
+  }
+
+  .table-elastic td {
+    @apply py-4 px-4 border-b border-elastic-dark-600 text-sm;
+  }
+
+  .table-elastic tbody tr {
+    @apply hover:bg-elastic-dark-700 transition-colors;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply bg-elastic-blue-600 hover:bg-elastic-blue-500 text-white font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-elastic-dark-600 hover:bg-elastic-dark-500 text-elastic-text-primary font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  /* Link styles */
+  .link-elastic {
+    @apply text-elastic-blue-600 hover:text-elastic-blue-500 transition-colors;
+  }
+
+  /* Badge/Status styles */
+  .badge-healthy {
+    @apply bg-elastic-success/20 text-elastic-success px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-warning {
+    @apply bg-elastic-warning/20 text-elastic-warning px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-error {
+    @apply bg-elastic-danger/20 text-elastic-danger px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* Panel/Card styles */
+  .panel-elastic {
+    @apply bg-elastic-dark-700 border border-elastic-dark-600 rounded-lg;
+  }
+}

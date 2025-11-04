@@ -1,16 +1,16 @@
-import type { ElasticsearchCluster, KibanaInstance, ClusterHealth, ClusterStats } from '@types/index';
-import { mockClusters, mockKibana, USE_MOCK_DATA } from '@utils/mockData';
+import { mockClusters, mockKibana, USE_MOCK_DATA } from '../utils/mockData';
 
 const API_BASE_URL = '/api/v1';
 
 class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(status, message) {
     super(message);
     this.name = 'ApiError';
+    this.status = status;
   }
 }
 
-async function handleResponse<T>(response: Response): Promise<T> {
+async function handleResponse(response) {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: response.statusText }));
     throw new ApiError(response.status, error.message || 'An error occurred');
@@ -19,7 +19,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const clustersApi = {
-  list: async (namespace?: string): Promise<ElasticsearchCluster[]> => {
+  list: async (namespace) => {
     if (USE_MOCK_DATA) {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -32,10 +32,10 @@ export const clustersApi = {
       ? `${API_BASE_URL}/clusters?namespace=${namespace}`
       : `${API_BASE_URL}/clusters`;
     const response = await fetch(url);
-    return handleResponse<ElasticsearchCluster[]>(response);
+    return handleResponse(response);
   },
 
-  get: async (namespace: string, name: string): Promise<ElasticsearchCluster> => {
+  get: async (namespace, name) => {
     if (USE_MOCK_DATA) {
       await new Promise(resolve => setTimeout(resolve, 300));
       const cluster = mockClusters.find(
@@ -48,28 +48,28 @@ export const clustersApi = {
     }
 
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}`);
-    return handleResponse<ElasticsearchCluster>(response);
+    return handleResponse(response);
   },
 
-  create: async (namespace: string, cluster: Partial<ElasticsearchCluster>): Promise<ElasticsearchCluster> => {
+  create: async (namespace, cluster) => {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cluster),
     });
-    return handleResponse<ElasticsearchCluster>(response);
+    return handleResponse(response);
   },
 
-  update: async (namespace: string, name: string, cluster: Partial<ElasticsearchCluster>): Promise<ElasticsearchCluster> => {
+  update: async (namespace, name, cluster) => {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cluster),
     });
-    return handleResponse<ElasticsearchCluster>(response);
+    return handleResponse(response);
   },
 
-  delete: async (namespace: string, name: string): Promise<void> => {
+  delete: async (namespace, name) => {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}`, {
       method: 'DELETE',
     });
@@ -78,19 +78,19 @@ export const clustersApi = {
     }
   },
 
-  getHealth: async (namespace: string, name: string): Promise<ClusterHealth> => {
+  getHealth: async (namespace, name) => {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/health`);
-    return handleResponse<ClusterHealth>(response);
+    return handleResponse(response);
   },
 
-  getStats: async (namespace: string, name: string): Promise<ClusterStats> => {
+  getStats: async (namespace, name) => {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/stats`);
-    return handleResponse<ClusterStats>(response);
+    return handleResponse(response);
   },
 };
 
 export const kibanaApi = {
-  list: async (namespace?: string): Promise<KibanaInstance[]> => {
+  list: async (namespace) => {
     if (USE_MOCK_DATA) {
       await new Promise(resolve => setTimeout(resolve, 400));
       return namespace
@@ -102,18 +102,18 @@ export const kibanaApi = {
       ? `${API_BASE_URL}/kibana?namespace=${namespace}`
       : `${API_BASE_URL}/kibana`;
     const response = await fetch(url);
-    return handleResponse<KibanaInstance[]>(response);
+    return handleResponse(response);
   },
 
-  get: async (namespace: string, name: string): Promise<KibanaInstance> => {
+  get: async (namespace, name) => {
     const response = await fetch(`${API_BASE_URL}/kibana/${namespace}/${name}`);
-    return handleResponse<KibanaInstance>(response);
+    return handleResponse(response);
   },
 };
 
 export const namespacesApi = {
-  list: async (): Promise<string[]> => {
+  list: async () => {
     const response = await fetch(`${API_BASE_URL}/namespaces`);
-    return handleResponse<string[]>(response);
+    return handleResponse(response);
   },
 };
