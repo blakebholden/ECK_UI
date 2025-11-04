@@ -78,16 +78,14 @@ const ClusterList: React.FC = () => {
     },
     {
       name: 'Actions',
-      actions: [
-        {
-          name: 'View',
-          description: 'View cluster details',
-          icon: 'eye',
-          type: 'icon',
-          onClick: (cluster: ElasticsearchCluster) =>
-            navigate(`/clusters/${cluster.metadata.namespace}/${cluster.metadata.name}`),
-        },
-      ],
+      render: (cluster: ElasticsearchCluster) => (
+        <EuiButton
+          size="s"
+          onClick={() => navigate(`/clusters/${cluster.metadata.namespace}/${cluster.metadata.name}`)}
+        >
+          View
+        </EuiButton>
+      ),
     },
   ];
 
@@ -122,7 +120,7 @@ const ClusterList: React.FC = () => {
         pageTitle="Elasticsearch Clusters"
         description="Manage your Elasticsearch clusters running on Kubernetes"
         rightSideItems={[
-          <EuiButton fill iconType="plus" onClick={() => navigate('/clusters/create')}>
+          <EuiButton fill onClick={() => navigate('/clusters/create')}>
             Create Cluster
           </EuiButton>,
         ]}
@@ -136,11 +134,10 @@ const ClusterList: React.FC = () => {
         </div>
       ) : !clusters || clusters.length === 0 ? (
         <EuiEmptyPrompt
-          iconType="logoElasticsearch"
           title={<h2>No clusters found</h2>}
           body={<p>Get started by creating your first Elasticsearch cluster.</p>}
           actions={
-            <EuiButton fill iconType="plus" onClick={() => navigate('/clusters/create')}>
+            <EuiButton fill onClick={() => navigate('/clusters/create')}>
               Create Cluster
             </EuiButton>
           }
