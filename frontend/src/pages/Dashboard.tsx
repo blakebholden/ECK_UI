@@ -12,8 +12,13 @@ import {
   EuiEmptyPrompt,
   EuiButton,
   EuiTitle,
+  EuiBasicTable,
+  EuiBadge,
+  EuiBasicTableColumn,
+  EuiLink,
 } from '@elastic/eui';
 import { clustersApi } from '@services/api';
+import type { ElasticsearchCluster } from '@types/index';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +47,57 @@ const Dashboard: React.FC = () => {
   const totalClusters = clusters?.length || 0;
   const totalNodes = clusters?.reduce((sum, cluster) => sum + (cluster.status?.availableNodes || 0), 0) || 0;
 
+  const columns: Array<EuiBasicTableColumn<ElasticsearchCluster>> = [
+    {
+      field: 'metadata.name',
+      name: 'Deployment',
+      render: (name: string, cluster: ElasticsearchCluster) => (
+        <EuiLink
+          color="primary"
+          onClick={() => navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`)}
+        >
+          {name}
+        </EuiLink>
+      ),
+    },
+    {
+      field: 'status.health',
+      name: 'Status',
+      render: (health: string) => {
+        const color = health === 'green' ? 'success' : health === 'yellow' ? 'warning' : 'danger';
+        const label = health === 'green' ? 'Healthy' : health === 'yellow' ? 'Warning' : 'Unhealthy';
+        return <EuiBadge color={color}>{label}</EuiBadge>;
+      },
+    },
+    {
+      field: 'spec.version',
+      name: 'Version',
+      render: (version: string) => version || 'N/A',
+    },
+    {
+      field: 'metadata.namespace',
+      name: 'Namespace',
+    },
+    {
+      field: 'status.availableNodes',
+      name: 'Nodes',
+      render: (nodes: number) => nodes || 0,
+    },
+    {
+      name: 'Actions',
+      actions: [
+        {
+          name: 'Open',
+          description: 'Open cluster details',
+          type: 'icon',
+          icon: 'eye',
+          onClick: (cluster: ElasticsearchCluster) =>
+            navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`),
+        },
+      ],
+    },
+  ];
+
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
       <div style={{ padding: '24px 48px' }}>
@@ -66,7 +122,7 @@ const Dashboard: React.FC = () => {
           />
         ) : (
           <>
-            <EuiPanel paddingSize="none" hasBorder style={{ background: 'transparent' }}>
+            <EuiPanel paddingSize="none" hasBorder>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #343741', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <EuiTitle size="s">
                   <h2>Elasticsearch Deployments</h2>
@@ -75,54 +131,11 @@ const Dashboard: React.FC = () => {
                   Create deployment
                 </EuiButton>
               </div>
-              <div style={{ padding: '0' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid #343741' }}>
-                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Deployment</th>
-                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Status</th>
-                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Version</th>
-                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Namespace</th>
-                      <th style={{ padding: '12px 24px', textAlign: 'left', fontWeight: 500, fontSize: '14px' }}>Nodes</th>
-                      <th style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 500, fontSize: '14px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {clusters?.map((cluster) => (
-                      <tr key={`${cluster.metadata?.namespace}/${cluster.metadata?.name}`} style={{ borderBottom: '1px solid #343741' }}>
-                        <td style={{ padding: '16px 24px' }}>
-                          <span style={{ color: '#1BA9F5', fontWeight: 500 }}>{cluster.metadata?.name}</span>
-                        </td>
-                        <td style={{ padding: '16px 24px' }}>
-                          <span
-                            style={{
-                              padding: '4px 12px',
-                              borderRadius: '4px',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              background: cluster.status?.health === 'green' ? '#00BFB3' : cluster.status?.health === 'yellow' ? '#FEC514' : '#F04E98',
-                              color: '#000'
-                            }}
-                          >
-                            {cluster.status?.health === 'green' ? 'Healthy' : cluster.status?.health === 'yellow' ? 'Warning' : 'Unhealthy'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '16px 24px' }}>{cluster.spec?.version || 'N/A'}</td>
-                        <td style={{ padding: '16px 24px' }}>{cluster.metadata?.namespace}</td>
-                        <td style={{ padding: '16px 24px' }}>{cluster.status?.availableNodes || 0}</td>
-                        <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                          <EuiButton
-                            size="s"
-                            onClick={() => navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`)}
-                          >
-                            Open
-                          </EuiButton>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <EuiBasicTable
+                items={clusters || []}
+                columns={columns}
+                tableLayout="auto"
+              />
             </EuiPanel>
           </>
         )}
