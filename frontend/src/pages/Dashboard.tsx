@@ -85,16 +85,14 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Actions',
-      actions: [
-        {
-          name: 'Open',
-          description: 'Open cluster details',
-          type: 'icon',
-          icon: 'eye',
-          onClick: (cluster: ElasticsearchCluster) =>
-            navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`),
-        },
-      ],
+      render: (cluster: ElasticsearchCluster) => (
+        <EuiButton
+          size="s"
+          onClick={() => navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`)}
+        >
+          Open
+        </EuiButton>
+      ),
     },
   ];
 
