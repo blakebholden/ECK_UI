@@ -1,4 +1,5 @@
 import type { ElasticsearchCluster, KibanaInstance, ClusterHealth, ClusterStats } from '@types/index';
+import { mockClusters, mockKibana, USE_MOCK_DATA } from '@utils/mockData';
 
 const API_BASE_URL = '/api/v1';
 
@@ -19,6 +20,14 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export const clustersApi = {
   list: async (namespace?: string): Promise<ElasticsearchCluster[]> => {
+    if (USE_MOCK_DATA) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return namespace
+        ? mockClusters.filter(c => c.metadata.namespace === namespace)
+        : mockClusters;
+    }
+
     const url = namespace
       ? `${API_BASE_URL}/clusters?namespace=${namespace}`
       : `${API_BASE_URL}/clusters`;
@@ -27,6 +36,17 @@ export const clustersApi = {
   },
 
   get: async (namespace: string, name: string): Promise<ElasticsearchCluster> => {
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const cluster = mockClusters.find(
+        c => c.metadata.namespace === namespace && c.metadata.name === name
+      );
+      if (!cluster) {
+        throw new ApiError(404, 'Cluster not found');
+      }
+      return cluster;
+    }
+
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}`);
     return handleResponse<ElasticsearchCluster>(response);
   },
@@ -71,6 +91,13 @@ export const clustersApi = {
 
 export const kibanaApi = {
   list: async (namespace?: string): Promise<KibanaInstance[]> => {
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 400));
+      return namespace
+        ? mockKibana.filter(k => k.metadata.namespace === namespace)
+        : mockKibana;
+    }
+
     const url = namespace
       ? `${API_BASE_URL}/kibana?namespace=${namespace}`
       : `${API_BASE_URL}/kibana`;
