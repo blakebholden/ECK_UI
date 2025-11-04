@@ -16,6 +16,14 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
     },
   },
+  optimizeDeps: {
+    include: ['@elastic/eui'],
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
   server: {
     port: 3000,
     proxy: {

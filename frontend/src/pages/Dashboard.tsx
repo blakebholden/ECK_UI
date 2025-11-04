@@ -47,7 +47,7 @@ const Dashboard: React.FC = () => {
         pageTitle="Dashboard"
         description="Overview of your Elastic Cloud on Kubernetes deployments"
         rightSideItems={[
-          <EuiButton fill iconType="plus" onClick={() => navigate('/clusters/create')}>
+          <EuiButton fill iconType="plusInCircle" onClick={() => navigate('/clusters/create')}>
             Create Cluster
           </EuiButton>,
         ]}
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
           title={<h2>No Elasticsearch clusters found</h2>}
           body={<p>Get started by creating your first Elasticsearch cluster.</p>}
           actions={
-            <EuiButton fill iconType="plus" onClick={() => navigate('/clusters/create')}>
+            <EuiButton fill iconType="plusInCircle" onClick={() => navigate('/clusters/create')}>
               Create Cluster
             </EuiButton>
           }

@@ -20,7 +20,7 @@ const Header: React.FC = () => {
         <EuiHeaderSectionItem>
           <EuiTitle size="xs">
             <h1 style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/')}>
-              <EuiIcon type="logoElastic" size="l" />
+              <EuiIcon type="logoKibana" size="l" />
               ECK UI
             </h1>
           </EuiTitle>
