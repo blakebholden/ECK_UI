@@ -1,0 +1,45 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eck-ui-test
+  region: us-east-2
+  version: "1.31"
+
+# IAM settings
+iam:
+  withOIDC: true
+
+# Node groups
+managedNodeGroups:
+  - name: eck-nodes
+    instanceType: t3.medium
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 3
+    volumeSize: 30
+    tags:
+      # Elastic Internal Tagging Policy - Required tags
+      division: engineering
+      org: cloud
+      team: ece
+      project: blakebholden
+      # Additional descriptive tags
+      Project: ECK-UI
+      Environment: Test
+    labels:
+      role: worker
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        ebs: true
+        efs: true
+        albIngress: true
+
+# Enable CloudWatch logging
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+      - api
+      - audit
+      - authenticator
