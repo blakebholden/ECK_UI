@@ -87,6 +87,21 @@ export const clustersApi = {
     const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/stats`);
     return handleResponse(response);
   },
+
+  getDetails: async (namespace, name) => {
+    const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/details`);
+    return handleResponse(response);
+  },
+
+  getKibanaUrl: async (namespace, name) => {
+    const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/kibana-url`);
+    return handleResponse(response);
+  },
+
+  getCredentials: async (namespace, name) => {
+    const response = await fetch(`${API_BASE_URL}/clusters/${namespace}/${name}/credentials`);
+    return handleResponse(response);
+  },
 };
 
 export const kibanaApi = {
@@ -114,6 +129,20 @@ export const kibanaApi = {
 export const namespacesApi = {
   list: async () => {
     const response = await fetch(`${API_BASE_URL}/namespaces`);
+    return handleResponse(response);
+  },
+};
+
+export const capacityApi = {
+  get: async () => {
+    const response = await fetch(`${API_BASE_URL}/capacity`);
+    return handleResponse(response);
+  },
+};
+
+export const storageApi = {
+  list: async () => {
+    const response = await fetch(`${API_BASE_URL}/storage`);
     return handleResponse(response);
   },
 };

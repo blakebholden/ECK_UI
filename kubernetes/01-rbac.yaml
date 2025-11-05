@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eck-ui-backend
+  namespace: eck-ui
+  labels:
+    app: eck-ui
+    component: backend
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eck-ui-manager
+  labels:
+    app: eck-ui
+rules:
+  # Elasticsearch cluster management
+  - apiGroups: ["elasticsearch.k8s.elastic.co"]
+    resources: ["elasticsearches"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Elasticsearch status
+  - apiGroups: ["elasticsearch.k8s.elastic.co"]
+    resources: ["elasticsearches/status"]
+    verbs: ["get", "list", "watch"]
+  
+  # Kibana management (optional)
+  - apiGroups: ["kibana.k8s.elastic.co"]
+    resources: ["kibanas"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Pods and services (for status checking)
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  
+  # Namespaces (to list available namespaces)
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  
+  # Events (for troubleshooting)
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eck-ui-manager-binding
+  labels:
+    app: eck-ui
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eck-ui-manager
+subjects:
+  - kind: ServiceAccount
+    name: eck-ui-backend
+    namespace: eck-ui

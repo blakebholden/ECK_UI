@@ -14,7 +14,7 @@ import {
   Panel,
   PanelTitle,
 } from '../components/ui';
-import { clustersApi } from '../services/api';
+import { clustersApi, capacityApi } from '../services/api';
 import EventFeed from '../components/EventFeed';
 import ClusterCards from '../components/ClusterCards';
 
@@ -27,6 +27,12 @@ const Dashboard = () => {
   const { data: clusters, isLoading, error } = useQuery({
     queryKey: ['clusters'],
     queryFn: () => clustersApi.list(),
+  });
+
+  const { data: capacity } = useQuery({
+    queryKey: ['capacity'],
+    queryFn: () => capacityApi.get(),
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   if (error) {
@@ -57,6 +63,20 @@ const Dashboard = () => {
     if (health === 'green') return 'Healthy';
     if (health === 'yellow') return 'Warning';
     return 'Unhealthy';
+  };
+
+  const handleOpenKibana = async (namespace, name) => {
+    try {
+      const result = await clustersApi.getKibanaUrl(namespace, name);
+      if (result.available && result.url) {
+        window.open(result.url, '_blank');
+      } else {
+        alert('Kibana is not available for this cluster');
+      }
+    } catch (error) {
+      console.error('Failed to get Kibana URL:', error);
+      alert('Failed to open Kibana. Please check the cluster details.');
+    }
   };
 
   return (
@@ -140,7 +160,7 @@ const Dashboard = () => {
                       <TableHeader>Deployment</TableHeader>
                       <TableHeader>Status</TableHeader>
                       <TableHeader>Version</TableHeader>
-                      <TableHeader>Cloud provider & region</TableHeader>
+                      <TableHeader>Namespace & Cluster</TableHeader>
                       <TableHeader>Actions</TableHeader>
                     </TableRow>
                   </TableHead>
@@ -171,7 +191,7 @@ const Dashboard = () => {
                           <div className="flex gap-4">
                             <Link
                               onClick={() =>
-                                navigate(`/clusters/${cluster.metadata?.namespace}/${cluster.metadata?.name}`)
+                                handleOpenKibana(cluster.metadata?.namespace, cluster.metadata?.name)
                               }
                             >
                               Open
@@ -217,8 +237,116 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Event Feed - Right Side (1/3 width on xl screens) */}
-          <div className="xl:col-span-1">
+          {/* Right Sidebar - (1/3 width on xl screens) */}
+          <div className="xl:col-span-1 space-y-6">
+            {/* Cluster Capacity Overview */}
+            {capacity && (
+              <Panel>
+                <PanelTitle className="mb-4">Cluster Capacity</PanelTitle>
+
+                {/* Node Summary */}
+                <div className="mb-4 pb-4 border-b border-elastic-dark-600">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-elastic-text-secondary">Total Nodes</span>
+                    <span className="text-elastic-text-primary font-medium">
+                      {capacity.cluster.totalNodes}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm mt-2">
+                    <span className="text-elastic-text-secondary">Ready Nodes</span>
+                    <span className="text-elastic-text-primary font-medium">
+                      {capacity.cluster.readyNodes}
+                    </span>
+                  </div>
+                </div>
+
+                {/* CPU */}
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-elastic-text-primary">CPU</span>
+                    <span className="text-xs text-elastic-text-secondary">
+                      {capacity.cluster.used.cpu.toFixed(2)} / {capacity.cluster.capacity.cpu.toFixed(2)} cores
+                    </span>
+                  </div>
+                  <div className="w-full bg-elastic-dark-700 rounded-full h-2 mb-1">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        capacity.cluster.utilization.cpu > 80 ? 'bg-red-500' :
+                        capacity.cluster.utilization.cpu > 60 ? 'bg-yellow-500' :
+                        'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min(capacity.cluster.utilization.cpu, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.utilization.cpu.toFixed(1)}% utilized
+                    </span>
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.available.cpu.toFixed(2)} cores available
+                    </span>
+                  </div>
+                </div>
+
+                {/* Memory */}
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-elastic-text-primary">Memory</span>
+                    <span className="text-xs text-elastic-text-secondary">
+                      {capacity.cluster.used.memory.toFixed(2)} / {capacity.cluster.capacity.memory.toFixed(2)} GB
+                    </span>
+                  </div>
+                  <div className="w-full bg-elastic-dark-700 rounded-full h-2 mb-1">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        capacity.cluster.utilization.memory > 80 ? 'bg-red-500' :
+                        capacity.cluster.utilization.memory > 60 ? 'bg-yellow-500' :
+                        'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min(capacity.cluster.utilization.memory, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.utilization.memory.toFixed(1)}% utilized
+                    </span>
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.available.memory.toFixed(2)} GB available
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pods */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-elastic-text-primary">Pod Slots</span>
+                    <span className="text-xs text-elastic-text-secondary">
+                      {capacity.cluster.used.pods} / {capacity.cluster.capacity.pods}
+                    </span>
+                  </div>
+                  <div className="w-full bg-elastic-dark-700 rounded-full h-2 mb-1">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        capacity.cluster.utilization.pods > 80 ? 'bg-red-500' :
+                        capacity.cluster.utilization.pods > 60 ? 'bg-yellow-500' :
+                        'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min(capacity.cluster.utilization.pods, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.utilization.pods.toFixed(1)}% utilized
+                    </span>
+                    <span className="text-elastic-text-secondary">
+                      {capacity.cluster.available.pods} slots available
+                    </span>
+                  </div>
+                </div>
+              </Panel>
+            )}
+
+            {/* Event Feed */}
             <EventFeed />
           </div>
         </div>

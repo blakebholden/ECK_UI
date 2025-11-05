@@ -1,0 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Elastic Logo Icon -->
+  <ellipse cx="28" cy="18" rx="18" ry="16" fill="#FED10A"/>
+  <ellipse cx="15" cy="12" rx="12" ry="10" fill="#DD0A73"/>
+  <ellipse cx="12" cy="32" rx="12" ry="14" fill="#00BFB3"/>
+  <ellipse cx="38" cy="38" rx="11" ry="10" fill="#0077CC"/>
+  <circle cx="48" cy="44" r="8" fill="#92C83E"/>
+  <ellipse cx="30" cy="50" rx="8" ry="7" fill="#0377CA"/>
+</svg>

@@ -1,34 +1,53 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../deploy/docker/Dockerfile.frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: npm run dev
-    depends_on:
-      - backend
-
   backend:
     build:
       context: ./backend
-      dockerfile: ../deploy/docker/Dockerfile.backend
+      dockerfile: Dockerfile
+    container_name: eck-ui-backend
     ports:
       - "4000:4000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-      - ~/.kube:/root/.kube:ro
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=4000
-      - CORS_ORIGIN=http://localhost:3000
-      - LOG_LEVEL=debug
-    command: npm run dev
+      - KUBECONFIG=/root/.kube/config
+    volumes:
+      # Mount kubeconfig for Kubernetes access
+      - ${HOME}/.kube:/root/.kube:ro
+      # For minikube, also mount minikube certs
+      - ${HOME}/.minikube:${HOME}/.minikube:ro
+    networks:
+      - eck-ui-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eck-ui-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    networks:
+      - eck-ui-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  eck-ui-network:
+    driver: bridge

@@ -33,15 +33,17 @@ const Header = () => {
           className="flex items-center gap-3 cursor-pointer"
         >
           <img
-            src="/elastic-logo.svg"
+            src="/elasticsearch-logo-svgrepo-com.svg"
             alt="Elastic Logo"
-            className="h-10"
-            style={{ width: 'auto' }}
+            className="h-8 w-8"
           />
+          <span className="text-white font-semibold text-xl">
+            elastic
+          </span>
         </div>
 
         <nav className="flex items-center">
-          <NavLink path="/">Cloud</NavLink>
+          <NavLink path="/">ECK</NavLink>
         </nav>
       </div>
     </header>

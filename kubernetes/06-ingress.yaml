@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eck-ui-ingress
+  namespace: eck-ui
+  labels:
+    app: eck-ui
+  annotations:
+    # For nginx ingress controller
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # For cert-manager (uncomment if using HTTPS)
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: eck-ui.local  # Change this to your domain
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: eck-ui-backend
+                port:
+                  number: 4000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: eck-ui-frontend
+                port:
+                  number: 80
+  # Uncomment for HTTPS
+  # tls:
+  #   - hosts:
+  #       - eck-ui.local
+  #     secretName: eck-ui-tls

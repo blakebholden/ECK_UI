@@ -8,6 +8,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 import clustersRouter from './routes/clusters.js';
 import kibanaRouter from './routes/kibana.js';
 import namespacesRouter from './routes/namespaces.js';
+import capacityRouter from './routes/capacity.js';
+import storageRouter from './routes/storage.js';
 
 // Load environment variables
 dotenv.config();
@@ -27,7 +29,7 @@ app.use(morgan('combined', {
 }));
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -35,6 +37,8 @@ app.get('/health', (req, res) => {
 app.use('/api/v1/clusters', clustersRouter);
 app.use('/api/v1/kibana', kibanaRouter);
 app.use('/api/v1/namespaces', namespacesRouter);
+app.use('/api/v1/capacity', capacityRouter);
+app.use('/api/v1/storage', storageRouter);
 
 // Error handling
 app.use(errorHandler);

@@ -58,7 +58,7 @@ const ClusterCards = ({ clusters }) => {
                 </div>
               </div>
               <span className="text-xs bg-elastic-dark-600 text-elastic-text-secondary px-2 py-1 rounded">
-                ☁️ Cloud
+                🔧 Self-Managed
               </span>
             </div>
 

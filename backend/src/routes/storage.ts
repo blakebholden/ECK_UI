@@ -3,11 +3,11 @@ import { k8sService } from '../services/kubernetes.service.js';
 
 const router = Router();
 
-// List all namespaces
+// List all storage classes
 router.get('/', async (_req, res, next) => {
   try {
-    const namespaces = await k8sService.listNamespaces();
-    res.json(namespaces);
+    const storageClasses = await k8sService.listStorageClasses();
+    res.json(storageClasses);
   } catch (error) {
     next(error);
   }
